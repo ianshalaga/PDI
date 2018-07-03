@@ -1,0 +1,124 @@
+\documentclass[a4paper,10pt,spanish]{article}
+\usepackage[utf8]{inputenc} % Soporte para los acentos
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel} % Capítulos, seciones, etc. en español
+\usepackage[margin=1.5cm]{geometry} % Diseño del documento
+\usepackage{multicol} % Escribir doble columna
+\usepackage{xcolor} % Usar colores
+\usepackage{pstricks}
+\usepackage{enumerate} % Cambiar etiquetas de numeración
+\usepackage[shortlabels]{enumitem} % Manejo adicional de etiquetas de numeración
+\usepackage{graphicx} % Manejo de gráficos y figuras
+\graphicspath{ {img/} } %Carpeta que contiene las imagenes
+\usepackage{makeidx} % Índice alfabético
+% Paquetes adicionales de símbolos matemáticos
+\usepackage{amsmath,amssymb,amsfonts,latexsym,cancel} 
+\usepackage{newcent} % Fuente New Century Schoolbook
+\usepackage{booktabs} % Opciones adicionales para el entorno tabular
+\usepackage{longtable} % Para tablas de más de una página
+\usepackage{tikz,tkz-tab} % Creación de gráficos
+	\usetikzlibrary{matrix,arrows,positioning,shadows,shadings,
+					backgrounds,calc,shapes,tikzmark}
+                    
+\usepackage{tcolorbox,empheq} % Creación de cajas
+	\tcbuselibrary{skins,breakable,listings,theorems}
+\usepackage{gensymb} % Grados Celcius
+\definecolor{green}{RGB}{0,127,0}
+\definecolor{yellow}{RGB}{200,200,0}
+\pagestyle{myheadings} % Numeración de página en la parte superior
+
+\title{\Huge Procesamiento Digital de Imágenes \\ Parcial 2} % Título
+\author{Darién Julián Ramírez \\
+		Franco Matzkin \\
+        Gianfranco Fagioli} % Autor
+\date{\empty} % Fecha
+
+\begin{document}
+
+\maketitle % Mostrar título
+\tableofcontents % Tabla de contenidos
+
+\section{Anexo}
+
+%\begin{tcolorbox}[colback=gray!10!white,colframe=black!0!white]
+\textbf{Modelo de degradación (frecuencial):}
+\begin{align*}
+G(u,v) &= H(u,v)F(u,v)
+\end{align*}
+
+\begin{quote}
+$F(u,v)$: Transformada de Fourier de la imagen sin degradación. \\
+$H(u,v)$: Función de degredación. \\
+$G(u,v)$: Transformada de Fourier de la imagen degradada. \\
+\end{quote}
+
+\textbf{Filtro de media geométrica (frecuencial):}
+
+\begin{align*}
+\widehat{F}(u,v) &= \left[\frac{H^{*}(u,v)}{|H(u,v)|^{2}}\right]^{\alpha}
+\left[\frac{H^{*}(u,v)}{|H(u,v)|^{2}+\beta\frac{S_{\eta}(u,v)}{S_{f}(u,v)}}\right]^{1-\alpha}
+G(u,v)
+& \textit{Con }|H(u,v)|^{2} &= H^{*}(u,v)H(u,v)
+\end{align*}
+
+\begin{quote}
+Espectro de potencia del ruido: $S_{\eta}(u,v)=|N(u,v)|^{2}$ \\
+Espectro de potencia de la imagen original: $S_{f}(u,v)=|F(u,v)|^{2}$ \\
+\end{quote}
+
+Si $\alpha=1$ entonces,
+
+\begin{align*}
+\widehat{F}(u,v) &= \frac{H^{*}(u,v)}{|H(u,v)|^{2}}G(u,v)
+& \textit{Remplazando } |H(u,v)|^{2} &= H^{*}(u,v)H(u,v) \\
+&= \frac{H^{*}(u,v)}{H^{*}(u,v)H(u,v)}G(u,v)
+& \textit{Simplificando.} \\
+&= \frac{G(u,v)}{H(u,v)}
+& \textit{\textbf{Filtro inverso.}}
+\end{align*}
+
+Si $\alpha=0$ entonces,
+
+\begin{align*}
+\widehat{F}(u,v) &= \left[\frac{H^{*}(u,v)}{|H(u,v)|^{2}+\beta\frac{S_{\eta}(u,v)}{S_{f}(u,v)}}\right]G(u,v)
+& \textit{Reemplazando }H^{*}(u,v) &= \frac{|H(u,v)|^{2}}{H(u,v)} \\
+&= \left[\frac{1}{H(u,v)}\frac{|H(u,v)|^{2}}{|H(u,v)|^{2}+\beta\frac{S_{\eta}(u,v)}{S_{f}(u,v)}}\right]G(u,v)
+& \textit{\textbf{ Filtro paramétrico de Wiener.}} & \quad 0<\beta<1 \\
+\end{align*}
+
+Valores pequeños de $\beta$ restauran mejor la degradación pero no eliminan correctamente el ruido.
+
+Valores altos de $\beta$ restauran pobremente la degradación pero eliminan mejor el ruido.
+
+\begin{align*}
+\textit{Si }\beta=0 &\implies \widehat{F}(u,v) = \frac{G(u,v)}{H(u,v)} 
+& \textit{\textbf{Filtro inverso.}} \\
+\textit{Si }\beta=1 &\implies \widehat{F}(u,v) = \left[\frac{1}{H(u,v)}\frac{|H(u,v)|^{2}}{|H(u,v)|^{2}+\frac{S_{\eta}(u,v)}{S_{f}(u,v)}}\right]G(u,v)
+& \textit{\textbf{Filtro de Wiener.}}
+\end{align*}
+
+\begin{align*}
+\widehat{F}(u,v) &= \left[\frac{1}{H(u,v)}\frac{|H(u,v)|^{2}}{|H(u,v)|^{2}+\frac{\beta}{\rho}}\right]G(u,v) & \rho &= \frac{S_{f}(u,v)}{S_{\eta}(u,v)} & \textit{Relación señal/ruido.}
+\end{align*} \\
+
+Cuando no se conocen o no se pueden estimar los espectros de potencia se usa una aproximación:
+
+\begin{align*}
+\widehat{F}(u,v) &= \left[\frac{1}{H(u,v)}\frac{|H(u,v)|^{2}}{|H(u,v)|^{2}+K}\right]G(u,v)
+\end{align*}
+
+Si $\alpha=\frac{1}{2}$ entonces,
+
+\begin{align*}
+\widehat{F}(u,v) &= \left[\frac{H^{*}(u,v)}{|H(u,v)|^{2}}\right]^{\frac{1}{2}}
+\left[\frac{H^{*}(u,v)}{|H(u,v)|^{2}+\beta\frac{S_{\eta}(u,v)}{S_{f}(u,v)}}\right]^{\frac{1}{2}} \\
+&= \left[\frac{G(u,v)}{H(u,v)} \right]^{\frac{1}{2}}
+\left[\frac{1}{H(u,v)}\frac{|H(u,v)|^{2}}{|H(u,v)|^{2}+\beta\frac{S_{\eta}(u,v)}{S_{f}(u,v)}}\right]^{\frac{1}{2}} \\
+& \textit{Media geométrica entre el filtro inverso y el filtro paramétrico de Wiener.}
+\end{align*}
+
+Si $\alpha=\frac{1}{2}$ y $\beta=1$ entonces se tiene un filtro de ecualización del espectro de potencia.
+
+%\end{tcolorbox}
+
+\end{document}
